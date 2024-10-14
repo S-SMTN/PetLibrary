@@ -15,7 +15,7 @@ class Payment(models.Model):
         FINE = 'FINE', 'Fine'
 
     status = models.CharField(max_length=7, choices=PaymentStatus.choices)
-    payment_type = models.CharField(max_length=6, choices=PaymentType.choices)
+    payment_type = models.CharField(max_length=7, choices=PaymentType.choices)
     borrowing = models.ForeignKey(to=Borrowing, on_delete=models.PROTECT)
     session_url = models.URLField()
     session_id = models.CharField(max_length=255)
