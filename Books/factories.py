@@ -1,3 +1,5 @@
+from typing import List
+
 import factory
 from factory.django import DjangoModelFactory
 from faker import Faker
@@ -14,8 +16,8 @@ class AuthorFactory(DjangoModelFactory):
     last_name = factory.LazyAttribute(lambda _: fake.last_name())
 
 
-def get_random_author():
-    existing_authors = list(Author.objects.all())
+def get_random_author() -> List[Author]:
+    existing_authors = list(Author.objects.all().order_by('?')[:10])
 
     while len(existing_authors) < 10:
         new_author = AuthorFactory()

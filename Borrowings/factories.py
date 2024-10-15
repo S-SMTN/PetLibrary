@@ -1,5 +1,4 @@
 import random
-from datetime import timedelta
 
 import factory
 from factory.django import DjangoModelFactory
@@ -14,7 +13,9 @@ fake = Faker()
 
 def get_random_user():
     user = get_user_model()
-    existing_users = list(user.objects.exclude(is_staff=True))
+    existing_users = list(
+        user.objects.exclude(is_staff=True).order_by('?')[:10]
+    )
 
     return random.choice(existing_users)
 
