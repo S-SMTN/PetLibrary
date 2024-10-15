@@ -13,8 +13,15 @@ class AuthorAdmin(admin.ModelAdmin):
 
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
+    search_fields = ["title", "author"]
     list_display = [
         "title",
+        "author",
+        "cover",
+        "inventory",
+        "daily_fee"
+    ]
+    list_editable = [
         "author",
         "cover",
         "inventory",
