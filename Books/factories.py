@@ -19,10 +19,11 @@ class AuthorFactory(DjangoModelFactory):
 def get_random_author():
     existing_authors = list(Author.objects.all())
 
-    if existing_authors:
-        return existing_authors
-    else:
-        return [AuthorFactory()]
+    while len(existing_authors) < 10:
+        new_author = AuthorFactory()
+        existing_authors.append(new_author)
+
+    return existing_authors
 
 
 class BookFactory(DjangoModelFactory):
