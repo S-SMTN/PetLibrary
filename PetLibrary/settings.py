@@ -33,21 +33,32 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
-INSTALLED_APPS = [
+SHARED_APPS = [
+    'django_tenants',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "Public", #app
+    'Users'
+]
+
+TENANT_APPS = [
+    "Library", #client_app
     'Books',
     'Borrowings',
     'Notifications',
     'Payments',
-    'Users'
+]
+
+INSTALLED_APPS = SHARED_APPS + [
+    app for app in TENANT_APPS if app not in SHARED_APPS
 ]
 
 MIDDLEWARE = [
+    'django_tenants.middleware.main.TenantMainMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -83,7 +94,7 @@ WSGI_APPLICATION = 'PetLibrary.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django_tenants.postgresql_backend',
         'NAME': os.getenv("DB_Name"),
         'USER': os.getenv("DB_User"),
         'PASSWORD': os.getenv("DB_Password"),
@@ -92,6 +103,9 @@ DATABASES = {
     }
 }
 
+DATABASE_ROUTERS = (
+    'django_tenants.routers.TenantSyncRouter',
+)
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -136,3 +150,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'Users.User'
 
+TENANT_MODEL = "Public.LibraryTenant"
+
+TENANT_DOMAIN_MODEL = "Public.Domain"
+
+PUBLIC_SCHEMA_URLCONF = "Public.urls"
