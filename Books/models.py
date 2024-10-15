@@ -17,7 +17,11 @@ class Book(models.Model):
         SOFT = 'SOFT', 'Softcover'
 
     title = models.CharField(max_length=255)
-    author = models.ForeignKey(to=Author, on_delete=models.PROTECT)
+    author = models.ForeignKey(
+        to=Author,
+        on_delete=models.PROTECT,
+        related_name="books"
+    )
     cover = models.CharField(max_length=4, choices=CoverType.choices)
     inventory = models.PositiveIntegerField(validators=[MinValueValidator(1)])
     daily_fee = models.DecimalField(

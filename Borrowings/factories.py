@@ -24,7 +24,7 @@ class BorrowingFactory(DjangoModelFactory):
     class Meta:
         model = Borrowing
 
-    borrow_date = factory.LazyAttribute(lambda _: None)
+    borrow_date = factory.LazyAttribute(lambda _: fake.date_time_this_year())
     expected_return_date = factory.LazyAttribute(lambda _: None)
     actual_return_date = factory.LazyAttribute(lambda _: None)
     book = factory.Iterator(Book.objects.all())

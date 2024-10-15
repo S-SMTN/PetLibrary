@@ -17,7 +17,7 @@ class AuthorFactory(DjangoModelFactory):
 
 
 def get_random_author() -> List[Author]:
-    existing_authors = list(Author.objects.all().order_by('?')[:10])
+    existing_authors = list(Author.objects.all())
 
     while len(existing_authors) < 10:
         new_author = AuthorFactory()
