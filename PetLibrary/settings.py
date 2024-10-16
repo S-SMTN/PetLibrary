@@ -41,12 +41,12 @@ SHARED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    "Public", #app
+    "Public",
     'Users'
 ]
 
 TENANT_APPS = [
-    "Library", #client_app
+    "Library",
     'Books',
     'Borrowings',
     'Notifications',
