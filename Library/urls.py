@@ -11,5 +11,5 @@ urlpatterns = [
     path('admin/', tenant_admin_site.urls),
     path("", index),
     path("factory_book/", factory_book),
-    path("factory_borrowing", factory_borrowing)
+    path("factory_borrowing/", factory_borrowing)
 ]
