@@ -7,14 +7,18 @@ class Author(models.Model):
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
 
-    def __str__(self) -> str:
+    @property
+    def full_name(self) -> str:
         return f"{self.first_name} {self.last_name}"
+
+    def __str__(self) -> str:
+        return self.full_name
 
 
 class Book(models.Model):
     class CoverType(models.TextChoices):
-        HARD = 'HARD', 'Hardcover'
-        SOFT = 'SOFT', 'Softcover'
+        HARD = "HARD", "Hardcover"
+        SOFT = "SOFT", "Softcover"
 
     title = models.CharField(max_length=255)
     author = models.ForeignKey(
@@ -23,11 +27,11 @@ class Book(models.Model):
         related_name="books"
     )
     cover = models.CharField(max_length=4, choices=CoverType.choices)
-    inventory = models.PositiveIntegerField(validators=[MinValueValidator(1)])
+    inventory = models.PositiveIntegerField()
     daily_fee = models.DecimalField(
         max_digits=6,
         decimal_places=2,
-        validators=[MinValueValidator(Decimal('0.01'))]
+        validators=[MinValueValidator(Decimal("0.01"))]
     )
 
     def __str__(self) -> str:
