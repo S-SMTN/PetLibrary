@@ -9,5 +9,6 @@ def index(request: HttpRequest):
         f"<h1>Tenant: {tenant}</h1>",
         f"<h1>Domain: {domain}</h1>",
         f"<h1>Host: {host}</h1>",
-        f"<h1>Welcome to public!</h1>"
+        f"<h1>Welcome to public!</h1>",
+        f"<h1>User: {request.user}</h1>"
     ))
