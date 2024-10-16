@@ -1,5 +1,3 @@
-from typing import List
-
 import factory
 from factory.django import DjangoModelFactory
 from faker import Faker
@@ -16,22 +14,12 @@ class AuthorFactory(DjangoModelFactory):
     last_name = factory.LazyAttribute(lambda _: fake.last_name())
 
 
-def get_random_author() -> List[Author]:
-    existing_authors = list(Author.objects.all())
-
-    while len(existing_authors) < 10:
-        new_author = AuthorFactory()
-        existing_authors.append(new_author)
-
-    return existing_authors
-
-
 class BookFactory(DjangoModelFactory):
     class Meta:
         model = Book
 
     title = factory.LazyAttribute(lambda _: fake.sentence(nb_words=3)[:-1])
-    author = factory.Iterator(get_random_author())
+    author = factory.SubFactory(AuthorFactory)
     cover = factory.Iterator([Book.CoverType.HARD, Book.CoverType.SOFT])
     inventory = factory.LazyAttribute(
         lambda _: fake.random_int(min=1, max=100)
