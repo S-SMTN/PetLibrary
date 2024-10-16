@@ -1,9 +1,10 @@
 from django.contrib import admin
 
+from Library.admin import tenant_admin_site
 from Payments.models import Payment
 
 
-@admin.register(Payment)
+@admin.register(Payment, site=tenant_admin_site)
 class PaymentAdmin(admin.ModelAdmin):
     list_display = [
         "status",

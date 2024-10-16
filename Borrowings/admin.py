@@ -1,9 +1,10 @@
 from django.contrib import admin
 
 from Borrowings.models import Borrowing
+from Library.admin import tenant_admin_site
 
 
-@admin.register(Borrowing)
+@admin.register(Borrowing, site=tenant_admin_site)
 class BorrowingAdmin(admin.ModelAdmin):
     search_fields = ["borrow_date", "book", "user"]
     list_display = [

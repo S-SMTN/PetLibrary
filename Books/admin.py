@@ -1,9 +1,10 @@
 from django.contrib import admin
 
 from Books.models import Author, Book
+from Library.admin import tenant_admin_site
 
 
-@admin.register(Author)
+@admin.register(Author, site=tenant_admin_site)
 class AuthorAdmin(admin.ModelAdmin):
     list_display = [
         "first_name",
@@ -11,7 +12,7 @@ class AuthorAdmin(admin.ModelAdmin):
     ]
 
 
-@admin.register(Book)
+@admin.register(Book, site=tenant_admin_site)
 class BookAdmin(admin.ModelAdmin):
     search_fields = ["title", "author"]
     list_display = [
