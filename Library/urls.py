@@ -14,5 +14,8 @@ urlpatterns = [
     path("factory_borrowing/", factory_borrowing),
     path(
         "api/books/", include("Books.urls", namespace="books")
+    ),
+    path(
+        "api/borrowings/", include("Borrowings.urls", namespace="borrowings")
     )
 ]
