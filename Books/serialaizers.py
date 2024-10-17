@@ -11,12 +11,6 @@ class AuthorSerializer(serializers.ModelSerializer):
         fields = ["id", "first_name", "last_name", "full_name"]
 
 
-class AuthorNestedSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Author
-        fields = ["full_name"]
-
-
 class BookSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         read_only=True, slug_field="full_name"
@@ -43,3 +37,13 @@ class BookSerializer(serializers.ModelSerializer):
         if value < Decimal("0.01"):
             raise serializers.ValidationError("Daily fee cannot be less than 0.01.")
         return value
+
+
+class BookNestedSerializer(serializers.ModelSerializer):
+    author = serializers.SlugRelatedField(
+        read_only=True, slug_field="full_name"
+    )
+
+    class Meta:
+        model = Book
+        fields = ["title", "author", "daily_fee"]
