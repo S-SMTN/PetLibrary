@@ -5,8 +5,13 @@ from Public.models import Library
 
 
 class User(AbstractUser):
+    email = models.EmailField(unique=True)
+
+    @property
+    def full_name(self) -> str:
+        return self.get_full_name()
 
     def __str__(self) -> str:
         return (
-            f"{self.first_name} {self.last_name} ({self.email}), "
+            f"{self.full_name} ({self.email}), "
         )
