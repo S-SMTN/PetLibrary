@@ -1,5 +1,6 @@
 from typing import List
 
+from django.db import transaction
 from rest_framework import serializers
 
 from Books.models import Book
@@ -22,9 +23,7 @@ class BorrowingSerializer(serializers.ModelSerializer):
         read_only_fields = ["actual_return_date", "user"]
 
 
-class BorrowingListSerializer(BorrowingSerializer):
-    books = BookNestedSerializer(many=True, read_only=True)
-    user = UserNestedSerializer(read_only=True)
+class BorrowingCreateSerializer(BorrowingSerializer):
 
     def validate_books(self, books: List[Book]) -> List[Book]:
         for book in books:
@@ -40,14 +39,21 @@ class BorrowingListSerializer(BorrowingSerializer):
             validated_data["user"] = request.user
 
         books = validated_data.pop("books")
-        borrowing: Borrowing = Borrowing.objects.create(**validated_data)
-        borrowing.books.set(books)
 
-        for book in books:
-            book.inventory -= 1
-            book.save()
+        with transaction.atomic():
+            borrowing: Borrowing = Borrowing.objects.create(**validated_data)
+            borrowing.books.set(books)
+
+            for book in books:
+                book.inventory -= 1
+                book.save()
 
         return borrowing
+
+
+class BorrowingListSerializer(BorrowingSerializer):
+    books = BookNestedSerializer(many=True, read_only=True)
+    user = UserNestedSerializer(read_only=True)
 
 
 class BorrowingFactorySerializer(serializers.ModelSerializer):

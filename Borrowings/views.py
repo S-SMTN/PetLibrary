@@ -13,7 +13,11 @@ from rest_framework.viewsets import ModelViewSet
 
 from Borrowings.factories import BorrowingFactory
 from Borrowings.models import Borrowing
-from Borrowings.serializers import BorrowingSerializer, BorrowingListSerializer
+from Borrowings.serializers import (
+    BorrowingSerializer,
+    BorrowingListSerializer,
+    BorrowingCreateSerializer
+)
 from PetLibrary.utils.paginations import ViewPagination
 
 
@@ -60,6 +64,8 @@ class BorrowingViewSet(ModelViewSet):
     def get_serializer_class(self) -> Type[Serializer]:
         if self.action in ("list", "retrieve"):
             return BorrowingListSerializer
+        if self.action == "create":
+            return BorrowingCreateSerializer
         return BorrowingSerializer
 
     def perform_create(self, serializer: BorrowingSerializer) -> None:

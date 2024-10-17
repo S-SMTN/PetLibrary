@@ -46,5 +46,5 @@ class BookViewSet(AdminOrAuthenticatedReadOnlyViewSet):
 
     def get_queryset(self) -> QuerySet:
         if self.action == "list":
-            return self.queryset.select_related("author")
+            return self.queryset.filter(inventory__gt=0).select_related("author")
 

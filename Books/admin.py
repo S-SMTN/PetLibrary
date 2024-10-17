@@ -17,6 +17,7 @@ class AuthorAdmin(admin.ModelAdmin):
 class BookAdmin(admin.ModelAdmin):
     search_fields = ["title", "author"]
     list_display = [
+        "id",
         "title",
         "author",
         "cover",
