@@ -1,4 +1,5 @@
 import random
+from datetime import timedelta, datetime
 from typing import List
 
 import factory
@@ -34,8 +35,10 @@ class BorrowingFactory(DjangoModelFactory):
     class Meta:
         model = Borrowing
 
-    borrow_date = factory.LazyAttribute(lambda _: fake.date_time_this_year())
-    expected_return_date = factory.LazyAttribute(lambda _: None)
+    borrow_date = factory.LazyAttribute(lambda _: datetime.now())
+    expected_return_date = factory.LazyAttribute(
+        lambda o: o.borrow_date + timedelta(days=fake.random_int(min=1, max=30))
+    )
     actual_return_date = factory.LazyAttribute(lambda _: None)
     user = factory.LazyAttribute(lambda _: get_random_user())
 

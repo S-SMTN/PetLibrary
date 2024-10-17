@@ -1,10 +1,13 @@
+from datetime import datetime
 from typing import List
 
 from django.db import transaction
+from django.utils import timezone
+from django.utils.timezone import is_aware, make_aware
 from rest_framework import serializers
 
 from Books.models import Book
-from Books.serialaizers import BookNestedSerializer, BookSerializer
+from Books.serialaizers import BookNestedSerializer
 from Borrowings.models import Borrowing
 from Users.serializers import UserNestedSerializer
 
@@ -23,9 +26,30 @@ class BorrowingSerializer(serializers.ModelSerializer):
         read_only_fields = ["actual_return_date", "user"]
 
 
+class BorrowingListSerializer(BorrowingSerializer):
+    books = BookNestedSerializer(many=True, read_only=True)
+    user = UserNestedSerializer(read_only=True)
+
+
 class BorrowingCreateSerializer(BorrowingSerializer):
 
-    def validate_books(self, books: List[Book]) -> List[Book]:
+    def validate(self, attrs: dict) -> dict:
+        borrow_date = attrs.get("borrow_date", datetime.now())
+        expected_return_date = attrs.get("expected_return_date")
+
+        if expected_return_date and not is_aware(expected_return_date):
+            expected_return_date = make_aware(expected_return_date)
+        if borrow_date and not is_aware(borrow_date):
+            borrow_date = make_aware(borrow_date)
+
+        if expected_return_date and expected_return_date <= borrow_date:
+            raise serializers.ValidationError(
+                {"expected_return_date": "Expected return date must be after the borrow date."}
+            )
+        return attrs
+
+    @staticmethod
+    def validate_books(books: List[Book]) -> List[Book]:
         for book in books:
             if book.inventory == 0:
                 raise serializers.ValidationError(
@@ -48,12 +72,49 @@ class BorrowingCreateSerializer(BorrowingSerializer):
                 book.inventory -= 1
                 book.save()
 
-        return borrowing
+            return borrowing
 
 
-class BorrowingListSerializer(BorrowingSerializer):
-    books = BookNestedSerializer(many=True, read_only=True)
-    user = UserNestedSerializer(read_only=True)
+class BorrowingUpdateSerializer(BorrowingListSerializer):
+    class Meta:
+        model = Borrowing
+        fields = [
+            "id",
+            "books",
+            "user",
+            "borrow_date",
+            "expected_return_date",
+            "actual_return_date",
+        ]
+        read_only_fields = [
+            "id",
+            "books",
+            "user",
+            "borrow_date",
+            "expected_return_date",
+            "actual_return_date",
+        ]
+
+
+    @staticmethod
+    def validate_borrowing(borrowing: Borrowing):
+        if borrowing.actual_return_date is not None:
+            raise serializers.ValidationError(
+                "This borrowing is already returned!"
+            )
+
+    def update(self, instance: Borrowing, validated_data: dict) -> Borrowing:
+        self.validate_borrowing(instance)
+
+        with transaction.atomic():
+            for book in instance.books.all():
+                book.inventory += 1
+                book.save()
+
+            instance.actual_return_date = timezone.now()
+            instance.save()
+
+        return instance
 
 
 class BorrowingFactorySerializer(serializers.ModelSerializer):
