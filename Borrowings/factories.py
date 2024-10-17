@@ -37,5 +37,17 @@ class BorrowingFactory(DjangoModelFactory):
     borrow_date = factory.LazyAttribute(lambda _: fake.date_time_this_year())
     expected_return_date = factory.LazyAttribute(lambda _: None)
     actual_return_date = factory.LazyAttribute(lambda _: None)
-    book = factory.Iterator(Book.objects.all())
     user = factory.LazyAttribute(lambda _: get_random_user())
+
+    @factory.post_generation
+    def book(self, create, extracted, **kwargs):
+        if not create:
+            return
+
+        if extracted:
+            for book in extracted:
+                self.book.add(book)
+        else:
+            books = Book.objects.all().order_by('?')[:3]
+            for book in books:
+                self.book.add(book)
