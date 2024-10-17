@@ -3,8 +3,6 @@ from django.urls import path, include
 from Borrowings.views import BorrowingFactoryView
 from Library.admin import tenant_admin_site
 
-from Library.views import index
-
 from Books.views import BookFactoryView
 
 urlpatterns = [
