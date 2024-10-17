@@ -1,7 +1,11 @@
 from django.db.models import QuerySet
-from django.http import HttpResponse
-from rest_framework.mixins import CreateModelMixin, ListModelMixin
-from rest_framework.viewsets import GenericViewSet, ModelViewSet
+from rest_framework import status
+from rest_framework.request import Request
+from rest_framework.response import Response
+from rest_framework.permissions import IsAdminUser
+from rest_framework.views import APIView
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.viewsets import ModelViewSet
 
 from Books.factories import BookFactory
 from Books.models import Author, Book
@@ -10,13 +14,23 @@ from PetLibrary.utils.paginations import ViewPagination
 from PetLibrary.utils.permissions import IsAdminOrIfAuthenticatedReadOnly
 
 
-def factory_book(request):
-    books = [BookFactory() for _ in range(10)]
+class BookFactoryView(APIView):
+    permission_classes = [IsAdminUser,]
+    authentication_classes = (JWTAuthentication,)
 
-    return HttpResponse(f"{[str(book) for book in books]}")
+    def post(self, request: Request, *args, **kwargs) -> Response:
+        serialized_books = []
+        for _ in range(10):
+            book = BookFactory()
+            serializer = BookSerializer(data=book.__dict__)
+            serializer.is_valid()
+            serialized_books.append(serializer.data)
+
+        return Response(serialized_books, status=status.HTTP_201_CREATED)
 
 
 class AdminOrAuthenticatedReadOnlyViewSet(ModelViewSet):
+    authentication_classes = (JWTAuthentication,)
     permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
     pagination_class = ViewPagination
 
