@@ -1,6 +1,6 @@
 from django.urls import path, include
 
-from Borrowings.views import factory_borrowing
+from Borrowings.views import BorrowingFactoryView
 from Library.admin import tenant_admin_site
 
 from Library.views import index
@@ -10,8 +10,8 @@ from Books.views import BookFactoryView
 urlpatterns = [
     path("admin/", tenant_admin_site.urls),
     path("", index),
-    path("api/factory_book/", BookFactoryView.as_view()),
-    path("api/factory_borrowing/", factory_borrowing),
+    path("api/book_factory/", BookFactoryView.as_view()),
+    path("api/borrowing_factory/", BorrowingFactoryView.as_view()),
     path(
         "api/books/", include("Books.urls", namespace="books")
     ),

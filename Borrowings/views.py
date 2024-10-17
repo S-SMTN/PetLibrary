@@ -2,15 +2,33 @@ from typing import Type
 
 from django.db.models import QuerySet
 from django.http import HttpResponse, HttpRequest
+from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
+from rest_framework.request import Request
 from rest_framework.serializers import Serializer
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
 from Borrowings.factories import BorrowingFactory
 from Borrowings.models import Borrowing
 from Borrowings.serializers import BorrowingSerializer, BorrowingListSerializer
 from PetLibrary.utils.paginations import ViewPagination
+
+
+class BorrowingFactoryView(APIView):
+    permission_classes = [IsAdminUser,]
+    authentication_classes = (JWTAuthentication,)
+
+    def post(self, request: Request, *args, **kwargs) -> Response:
+        serialized_borrowings = []
+        borrowings = BorrowingFactory.create_batch(10)
+        for borrowing in borrowings:
+            serializer = BorrowingListSerializer(borrowing)
+            serialized_borrowings.append(serializer.data)
+
+        return Response(serialized_borrowings, status=status.HTTP_201_CREATED)
 
 
 def factory_borrowing(request: HttpRequest):
@@ -43,3 +61,6 @@ class BorrowingViewSet(ModelViewSet):
         if self.action in ("list", "retrieve"):
             return BorrowingListSerializer
         return BorrowingSerializer
+
+    def perform_create(self, serializer: BorrowingSerializer) -> None:
+        serializer.save(user=self.request.user)

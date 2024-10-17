@@ -40,7 +40,7 @@ class BorrowingFactory(DjangoModelFactory):
     user = factory.LazyAttribute(lambda _: get_random_user())
 
     @factory.post_generation
-    def book(self, create, extracted, **kwargs):
+    def books(self, create, extracted, **kwargs):
         if not create:
             return
 
@@ -50,4 +50,4 @@ class BorrowingFactory(DjangoModelFactory):
         else:
             books = Book.objects.all().order_by('?')[:3]
             for book in books:
-                self.book.add(book)
+                self.books.add(book)
