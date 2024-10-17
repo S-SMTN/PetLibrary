@@ -6,6 +6,7 @@ from Library.admin import tenant_admin_site
 
 @admin.register(Author, site=tenant_admin_site)
 class AuthorAdmin(admin.ModelAdmin):
+    search_fields = ["first_name", "last_name"]
     list_display = [
         "first_name",
         "last_name"
