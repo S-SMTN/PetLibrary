@@ -9,8 +9,11 @@ class Borrowing(models.Model):
     borrow_date = models.DateTimeField(auto_now_add=True, editable=False)
     expected_return_date = models.DateTimeField(null=True, blank=True)
     actual_return_date = models.DateField(null=True, blank=True)
-    book = models.ForeignKey(to=Book, on_delete=models.PROTECT)
+    books = models.ManyToManyField(to=Book, related_name="borrowings")
     user = models.ForeignKey(get_user_model(), on_delete=models.PROTECT)
+
+    class Meta:
+        ordering = ["borrow_date", "user"]
 
     def save(self, *args, **kwargs):
         if self.expected_return_date is None:
@@ -18,4 +21,4 @@ class Borrowing(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"Borrowing of {self.book} by {self.user}"
+        return f"Borrowing of {self.books} by {self.user}"
