@@ -5,7 +5,8 @@ from django.urls import path, include
 from Public.views import index
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path("admin/", admin.site.urls),
     path("", index),
-    path('__debug__/', include(debug_toolbar.urls))
+    path("api/user/", include("Users.urls", namespace="User")),
+    path("__debug__/", include(debug_toolbar.urls))
 ]
