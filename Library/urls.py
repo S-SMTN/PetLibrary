@@ -9,7 +9,6 @@ from Books.views import BookFactoryView
 
 urlpatterns = [
     path("admin/", tenant_admin_site.urls),
-    path("", index),
     path("api/book_factory/", BookFactoryView.as_view()),
     path("api/borrowing_factory/", BorrowingFactoryView.as_view()),
     path(
