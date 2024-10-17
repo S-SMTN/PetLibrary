@@ -24,8 +24,6 @@ class BookAdmin(admin.ModelAdmin):
         "daily_fee"
     ]
     list_editable = [
-        "author",
-        "cover",
         "inventory",
         "daily_fee"
     ]
