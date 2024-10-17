@@ -11,19 +11,27 @@ class BorrowingAdmin(admin.ModelAdmin):
         "borrow_date",
         "expected_return_date",
         "actual_return_date",
-        "book",
+        "display_books",
         "user"
     ]
     list_editable = [
         "expected_return_date",
         "actual_return_date",
-        "book",
-        "user"
     ]
     list_filter = [
         "borrow_date",
         "expected_return_date",
         "actual_return_date",
-        "book",
         "user"
     ]
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        queryset = queryset.select_related("user")
+        queryset = queryset.prefetch_related("books__author")
+        return queryset
+
+    def display_books(self, obj):
+        return ", ".join([str(book) for book in obj.books.all()])
+
+    display_books.short_description = "Books"
