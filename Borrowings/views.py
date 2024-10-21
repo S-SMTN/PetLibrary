@@ -47,6 +47,7 @@ class BorrowingViewSet(
     )
     serializer_class = BorrowingSerializer
     pagination_class = ViewPagination
+    authentication_classes = (JWTAuthentication,)
 
     @action(
         methods=["POST"],
