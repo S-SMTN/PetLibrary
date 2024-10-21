@@ -1,8 +1,14 @@
+import os
+
 from django.db import models
 from django_tenants.models import TenantMixin, DomainMixin
 from django.core.exceptions import ValidationError
+from dotenv import load_dotenv
 
 import re
+
+
+load_dotenv()
 
 
 class LibraryTenant(TenantMixin):
@@ -46,7 +52,7 @@ class Library(models.Model):
 
         if created:
             Domain.objects.get_or_create(
-                domain=f"{self.subdomain}.localhost",
+                domain=f"{self.subdomain}.{os.getenv('DOMAIN_NAME')}",
                 tenant=tenant,
                 defaults={'is_primary': True}
             )
