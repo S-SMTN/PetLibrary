@@ -16,7 +16,8 @@ from Borrowings.models import Borrowing
 from Borrowings.serializers import (
     BorrowingSerializer,
     BorrowingListSerializer,
-    BorrowingCreateSerializer, BorrowingUpdateSerializer
+    BorrowingCreateSerializer,
+    BorrowingUpdateSerializer
 )
 from PetLibrary.utils.paginations import ViewPagination
 
