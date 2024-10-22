@@ -73,11 +73,22 @@ class BorrowingViewSet(
         return [IsAdminUser(),]
 
     def get_queryset(self) -> QuerySet:
+        queryset = self.queryset
+
+        is_active = self.request.query_params.get("is_active")
+        if is_active:
+            if is_active.lower() == "true":
+                queryset = queryset.filter(actual_return_date__isnull=True)
+            elif is_active.lower() == "false":
+                queryset = queryset.filter(actual_return_date__isnull=False)
+
         if self.request.user.is_staff:
-            return self.queryset.select_related(
-                "user",
-            )
-        return self.queryset.filter(user__id=self.request.user.id)
+            user_id = self.request.query_params.get("user_id")
+            if user_id:
+                queryset = queryset.filter(user__id=int(user_id))
+
+            return queryset.select_related("user")
+        return queryset.filter(user__id=self.request.user.id)
 
     def get_serializer_class(self) -> Type[Serializer]:
         if self.action in ("list", "retrieve"):
