@@ -1,3 +1,5 @@
+import random
+
 import factory
 from factory.django import DjangoModelFactory
 from faker import Faker
@@ -25,7 +27,5 @@ class BookFactory(DjangoModelFactory):
         lambda _: fake.random_int(min=1, max=100)
     )
     daily_fee = factory.LazyAttribute(
-        lambda _: round(
-            fake.pydecimal(left_digits=3, right_digits=2, positive=True), 2
-        )
+        lambda _: round(random.uniform(0.5, 2), 2)
     )
