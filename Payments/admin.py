@@ -7,6 +7,7 @@ from Payments.models import Payment
 @admin.register(Payment, site=tenant_admin_site)
 class PaymentAdmin(admin.ModelAdmin):
     list_display = [
+        "id",
         "status",
         "payment_type",
         "borrowing",
