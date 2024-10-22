@@ -12,6 +12,19 @@ from Borrowings.models import Borrowing
 from Users.serializers import UserNestedSerializer
 
 
+class MetaBase:
+    model = Borrowing
+    fields = [
+        "id",
+        "books",
+        "user",
+        "borrow_date",
+        "expected_return_date",
+        "actual_return_date",
+    ]
+    read_only_fields = ["actual_return_date", "user"]
+
+
 class BorrowingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Borrowing
@@ -22,16 +35,9 @@ class BorrowingSerializer(serializers.ModelSerializer):
             "borrow_date",
             "expected_return_date",
             "actual_return_date",
+            "payments"
         ]
         read_only_fields = ["actual_return_date", "user"]
-
-
-class BorrowingListSerializer(BorrowingSerializer):
-    books = BookNestedSerializer(many=True, read_only=True)
-    user = UserNestedSerializer(read_only=True)
-
-
-class BorrowingCreateSerializer(BorrowingSerializer):
 
     def validate(self, attrs: dict) -> dict:
         borrow_date = attrs.get("borrow_date", datetime.now())
@@ -76,24 +82,14 @@ class BorrowingCreateSerializer(BorrowingSerializer):
 
 
 class BorrowingUpdateSerializer(BorrowingListSerializer):
-    class Meta:
-        model = Borrowing
-        fields = [
+    class Meta(MetaBase):
+        read_only_fields = MetaBase.read_only_fields.extend([
             "id",
             "books",
-            "user",
             "borrow_date",
             "expected_return_date",
             "actual_return_date",
-        ]
-        read_only_fields = [
-            "id",
-            "books",
-            "user",
-            "borrow_date",
-            "expected_return_date",
-            "actual_return_date",
-        ]
+        ])
 
 
     @staticmethod
