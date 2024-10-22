@@ -4,6 +4,8 @@ django-tenants==3.7.0
 django-debug-toolbar==4.4.6
 djangorestframework-simplejwt==5.3.1
 
+stripe==11.1.1
+
 factory_boy==3.3.1
 Faker==30.3.0
 
