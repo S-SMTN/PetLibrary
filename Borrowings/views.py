@@ -43,7 +43,8 @@ class BorrowingViewSet(
 ):
     queryset = Borrowing.objects.all().prefetch_related(
         "books",
-        "books__author"
+        "books__author",
+        "payments"
     )
     serializer_class = BorrowingSerializer
     pagination_class = ViewPagination

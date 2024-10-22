@@ -9,6 +9,9 @@ from rest_framework import serializers
 from Books.models import Book
 from Books.serialaizers import BookNestedSerializer
 from Borrowings.models import Borrowing
+from Payments.models import Payment
+from Payments.serializers import PaymentSerializer
+from Payments.utils.stripe_utils import create_stripe_payment_session, calculate_total_price
 from Users.serializers import UserNestedSerializer
 
 
@@ -26,6 +29,21 @@ class MetaBase:
 
 
 class BorrowingSerializer(serializers.ModelSerializer):
+    class Meta(MetaBase):
+        pass
+
+
+class BorrowingListSerializer(serializers.ModelSerializer):
+    books = BookNestedSerializer(many=True, read_only=True)
+    user = UserNestedSerializer(read_only=True)
+    payments = PaymentSerializer(many=True, read_only=True)
+
+    class Meta(MetaBase):
+        fields = MetaBase.fields + ["payments"]
+
+
+class BorrowingCreateSerializer(serializers.ModelSerializer):
+    payments = PaymentSerializer(many=True, read_only=True)
     class Meta:
         model = Borrowing
         fields = [
@@ -77,6 +95,25 @@ class BorrowingSerializer(serializers.ModelSerializer):
             for book in books:
                 book.inventory -= 1
                 book.save()
+
+            total_price = calculate_total_price(borrowing)
+
+            session = create_stripe_payment_session(
+                borrowing=borrowing,
+                request=self.context.get("request"),
+                total_price=total_price
+            )
+
+            payment = Payment.objects.create(
+                status=Payment.PaymentStatus.PENDING,
+                payment_type=Payment.PaymentType.PAYMENT,
+                borrowing=borrowing,
+                session_url=session.url,
+                session_id=session.id,
+                money_to_pay=total_price
+            )
+
+            payment.save()
 
             return borrowing
 
