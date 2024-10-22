@@ -12,6 +12,7 @@ class PaymentSerializer(serializers.ModelSerializer):
             "status",
             "payment_type",
             "session_url",
+            "expires_at",
             "session_id",
             "money_to_pay",
         ]

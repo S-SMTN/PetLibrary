@@ -99,5 +99,5 @@ class BorrowingViewSet(
             return BorrowingUpdateSerializer
         return BorrowingSerializer
 
-    def perform_create(self, serializer: BorrowingSerializer) -> None:
+    def perform_create(self, serializer: BorrowingCreateSerializer) -> None:
         serializer.save(user=self.request.user)

@@ -49,6 +49,7 @@ class BorrowingListSerializer(serializers.ModelSerializer):
 
 class BorrowingCreateSerializer(serializers.ModelSerializer):
     payments = PaymentSerializer(many=True, read_only=True)
+
     class Meta:
         model = Borrowing
         fields = [
@@ -87,6 +88,10 @@ class BorrowingCreateSerializer(serializers.ModelSerializer):
         return books
 
     def create(self, validated_data: dict) -> Borrowing:
+        """
+        TODO: make a check logic: if user has a borrowing or user has a non payed payment:
+        restrict action
+        """
         request = self.context.get("request")
         if request and hasattr(request, "user"):
             validated_data["user"] = request.user
@@ -114,6 +119,7 @@ class BorrowingCreateSerializer(serializers.ModelSerializer):
                 payment_type=Payment.PaymentType.PAYMENT,
                 borrowing=borrowing,
                 session_url=session.url,
+                expires_at=datetime.fromtimestamp(session.expires_at),
                 session_id=session.id,
                 money_to_pay=total_price
             )
@@ -144,6 +150,10 @@ class BorrowingUpdateSerializer(BorrowingListSerializer):
             )
 
     def update(self, instance: Borrowing, validated_data: dict) -> Borrowing:
+        """
+        TODO Make the check logic: if instance has FINE payment AND session is expired:
+        make a new payment session and send it to user (Telegram notification)
+        """
         self.validate_borrowing(instance)
 
         with transaction.atomic():
@@ -164,6 +174,7 @@ class BorrowingUpdateSerializer(BorrowingListSerializer):
                     payment_type=Payment.PaymentType.FINE,
                     borrowing=instance,
                     session_url=session.url,
+                    expires_at=datetime.fromtimestamp(session.expires_at),
                     session_id=session.id,
                     money_to_pay=fine
                 )
