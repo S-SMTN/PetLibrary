@@ -56,7 +56,7 @@ class BorrowingViewSet(
         url_path="return_borrowing",
         permission_classes=[IsAuthenticated],
     )
-    def return_borrowing(self, request, pk=None) -> Response:
+    def return_borrowing(self, request: Request, pk: int = None) -> Response:
         borrowing = self.get_object()
         serializer = self.get_serializer(borrowing, data={}, partial=True)
 

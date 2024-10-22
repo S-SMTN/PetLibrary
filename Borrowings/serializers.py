@@ -11,7 +11,11 @@ from Books.serialaizers import BookNestedSerializer
 from Borrowings.models import Borrowing
 from Payments.models import Payment
 from Payments.serializers import PaymentSerializer
-from Payments.utils.stripe_utils import create_stripe_payment_session, calculate_total_price
+from Payments.utils.stripe_utils import (
+    create_stripe_payment_session,
+    calculate_total_price,
+    calculate_fine
+)
 from Users.serializers import UserNestedSerializer
 
 
@@ -24,6 +28,7 @@ class MetaBase:
         "borrow_date",
         "expected_return_date",
         "actual_return_date",
+        "payments"
     ]
     read_only_fields = ["actual_return_date", "user"]
 
@@ -120,13 +125,15 @@ class BorrowingCreateSerializer(serializers.ModelSerializer):
 
 class BorrowingUpdateSerializer(BorrowingListSerializer):
     class Meta(MetaBase):
-        read_only_fields = MetaBase.read_only_fields.extend([
+        read_only_fields = [
             "id",
             "books",
+            "user",
             "borrow_date",
             "expected_return_date",
             "actual_return_date",
-        ])
+            "payments"
+        ]
 
 
     @staticmethod
@@ -144,8 +151,28 @@ class BorrowingUpdateSerializer(BorrowingListSerializer):
                 book.inventory += 1
                 book.save()
 
+            fine = calculate_fine(instance)
+
+            if fine is not None:
+                session = create_stripe_payment_session(
+                    borrowing=instance,
+                    request=self.context.get("request"),
+                    total_price=fine
+                )
+                payment = Payment.objects.create(
+                    status=Payment.PaymentStatus.PENDING,
+                    payment_type=Payment.PaymentType.FINE,
+                    borrowing=instance,
+                    session_url=session.url,
+                    session_id=session.id,
+                    money_to_pay=fine
+                )
+                payment.save()
+
             instance.actual_return_date = timezone.now()
             instance.save()
+
+            instance.refresh_from_db()
 
         return instance
 

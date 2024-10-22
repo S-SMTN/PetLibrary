@@ -1,3 +1,4 @@
+from datetime import date
 from decimal import Decimal
 
 import stripe
@@ -20,6 +21,19 @@ def calculate_total_price(borrowing: Borrowing) -> Decimal:
 
     total_price = sum([book.daily_fee * borrow_days for book in borrowing.books.all()])
     return total_price
+
+
+def calculate_fine(borrowing: Borrowing) -> Decimal:
+    today = date.today()
+    expected_return_date = borrowing.expected_return_date.date()
+
+    if today > expected_return_date:
+        fine_days = (today - expected_return_date).days
+        total_fine = sum([
+            float(book.daily_fee * fine_days) * 1.5
+            for book in borrowing.books.all()
+        ])
+        return total_fine
 
 
 def create_stripe_payment_session(
