@@ -14,11 +14,15 @@ class Payment(models.Model):
         PAYMENT = 'PAYMENT', 'Payment'
         FINE = 'FINE', 'Fine'
 
+    class Meta:
+        ordering = ["-created_at"]
+
+    created_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=7, choices=PaymentStatus.choices)
     payment_type = models.CharField(max_length=7, choices=PaymentType.choices)
-    borrowing = models.ForeignKey(to=Borrowing, on_delete=models.PROTECT)
-    session_url = models.URLField()
-    session_id = models.CharField(max_length=255)
+    borrowing = models.ForeignKey(to=Borrowing, on_delete=models.PROTECT, related_name="payments")
+    session_url = models.URLField(max_length=500)
+    session_id = models.TextField()
     money_to_pay = models.DecimalField(
         max_digits=10,
         decimal_places=2,
