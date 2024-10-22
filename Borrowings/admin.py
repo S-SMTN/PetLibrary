@@ -8,6 +8,7 @@ from Library.admin import tenant_admin_site
 class BorrowingAdmin(admin.ModelAdmin):
     search_fields = ["borrow_date", "book", "user"]
     list_display = [
+        "id",
         "borrow_date",
         "expected_return_date",
         "actual_return_date",
