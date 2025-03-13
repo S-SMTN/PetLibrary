@@ -82,9 +82,9 @@ STRIPE_PUBLISHABLE_KEY=YOUR_STRIPE_PUBLISHABLE_KEY
 STRIPE_WEBHOOK_SECRET=YOUR_STRIPE_WEBHOOK_SECRET
 ```
 
-### 7. Configure and run Docker Compose to start PostgreSQL Admin (pgAdmin) locally:
+### 7. Configure PostgreSQL Admin (pgAdmin) connection:
 
-If you need to manage your PostgreSQL database through a web interface, you can use Docker Compose to run pgAdmin:
+If you need to manage your PostgreSQL database through a web interface, you can use Docker Compose to run pgAdmin.
 
 #### 1. Provide connection details in `.env`:
 
@@ -92,15 +92,6 @@ If you need to manage your PostgreSQL database through a web interface, you can 
 PGADMIN_EMAIL=YOUR_PGADMIN_EMAIL
 PGADMIN_PASSWORD=YOUR_PGADMIN_PASSWORD
 ```
-
-#### 2. Ensure Docker and Docker Compose are installed on your machine.
-
-#### 3. In the project root, run:
-
-```env
-docker-compose up
-```
-#### 4. Access pgAdmin at http://localhost:5050, log in using the credentials specified in the `.env` file.
 
 ### 8. Apply Migrations
 
@@ -117,19 +108,24 @@ Follow the prompts to create the superuser account.
 
 ### 10. Start the development Server
 
-#### 1. In your `.env` file, ensure the `DOMAIN_NAME` variable is set to the desired domain (`localhost` may be used on the development Server):
+#### 1. In your `.env` file, set the `DJ_SECRET_KEY` variable. You can generate it using https://djecrety.ir/
+
+#### 2. In your `.env` file, ensure the `DOMAIN_NAME` variable is set to the desired domain (`localhost` may be used on the development Server):
 
 ```env
 DOMAIN_NAME=localhost
 ```
 
-#### 2. Start the development server with the following command:
+#### 3. Ensure Docker and Docker Compose are installed on your machine.
+
+#### 4. In the project root, run:
 
 ```sh
- python manage.py runserver $DOMAIN_NAME:8000
+ docker-compose up
 ```
 
 Access the app at `http://$DOMAIN_NAME:8000`.
+Access pgAdmin at `http://localhost:5050`, log in using the credentials specified in the `.env` file.
 
 ## API Usage
 
