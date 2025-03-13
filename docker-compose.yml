@@ -1,0 +1,21 @@
+services:
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PASSWORD}
+    ports:
+      - 5050:80
+
+  web:
+      build: .
+      container_name: petlibrary_web
+      restart: always
+      env_file:
+        - .env
+      ports:
+        - "8000:8000"
+      command: >
+        sh -c "python manage.py migrate_schemas --shared &&
+                python manage.py runserver 0.0.0.0:8000"
